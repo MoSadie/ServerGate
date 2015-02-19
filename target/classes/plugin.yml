@@ -1,0 +1,30 @@
+name: ServerGate
+main: servergate.ServerGate
+version: 0.0.1
+commands:
+    open:
+        description: Opens the server for players to join.
+        usage: /open
+        permission: ServerGate.open
+        permission-message: You don't have permission to do this.
+    close:
+        description: Closes the server, preventing players from joining.
+        usage: /close
+        permission: ServerGate.close
+        permission-message: You don't have permission to do this.
+permission:
+    ServerGate.*:
+        description: Gives access to all permissions.
+        children:
+            ServerGate.open: true
+            ServerGate.close: true
+            ServerGate.bypass: true
+    ServerGate.open:
+        description: Allows you to open the server.
+        default: op
+    ServerGate.close:
+        description: Allows you to close the server.
+        default: op
+    ServerGate.bypass:
+        description: Allows you to bypass the Open/Closed setting
+        default: op

@@ -1,0 +1,5 @@
+message:
+  motd-start: A Minecraft Server
+  closed-join: The server is closed right now!
+  kicked-close: The server is closing!
+open: true
