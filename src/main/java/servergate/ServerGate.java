@@ -12,27 +12,32 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.server.ServerListPingEvent;
 
 public class ServerGate extends JavaPlugin implements Listener {
+	private String motd = null;
 	@EventHandler
     public void onServerPing(ServerListPingEvent event) {
+		if (motd == null) {
+			motd = event.getMotd();
+		}
         if (this.getConfig().getBoolean("open")) {
-        	event.setMotd(this.getConfig().getString("motd-start") + ": Open");
+        	event.setMotd(motd + ": Open");
         } else {        
-        	event.setMotd(this.getConfig().getString("motd-start") + ": Closed");
+        	event.setMotd(motd + ": Closed");
         }
     }
 	
 	@EventHandler
     public void onLogin(PlayerLoginEvent event) {
         if (!(this.getConfig().getBoolean("open"))) {
-        	event.disallow(Result.KICK_OTHER, this.getConfig().getString("closed-join"));
+        	event.disallow(Result.KICK_OTHER, this.getConfig().getString("message.closed-join"));
+        	getLogger().info("Kicked player " + event.getPlayer().getName() + " because the server is closed!"); // TODO Check if this is needed.
         }
     }
-	/*
+	
 	@Override
 	public void onEnable() {
-		//Something
+		getServer().getPluginManager().registerEvents(this, this);
 	}
-	*/
+	
 	@Override
 	public void onDisable() {
 		this.saveConfig();
@@ -45,8 +50,9 @@ public class ServerGate extends JavaPlugin implements Listener {
 				if (!(this.getConfig().getBoolean("open"))) {
 					this.getConfig().set("open", true);
 					this.saveConfig();
+					sender.sendMessage("[ServerGate] Server opened!");
 				} else {
-					sender.sendMessage("The server is already open!");
+					sender.sendMessage("[ServerGate] Server is already open!");
 				}
 			} catch (Exception e) {
 				getLogger().info("Exception while opening the server: " + e.toString());
@@ -60,13 +66,18 @@ public class ServerGate extends JavaPlugin implements Listener {
 				
 					for (Player player: Bukkit.getOnlinePlayers()) {
 						if (!(player.hasPermission("ServerGate.bypass"))) {
-							player.kickPlayer(this.getConfig().getString("kicked-close"));
+							player.kickPlayer(this.getConfig().getString("message.kicked-close"));
 						}
 					}
+					sender.sendMessage("[ServerGate] Server closed!");
+				} else 
+				{
+					sender.sendMessage("[ServerGate] Server is already closed!");
 				}
-				} catch (Exception e) {
-					getLogger().info("Exception while closing the server: " + e.toString());
-				}
+				return true;
+			} catch (Exception e) {
+				getLogger().info("Exception while closing the server: " + e.toString());
+			}
 		}
 		return false;
 	}

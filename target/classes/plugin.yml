@@ -1,6 +1,6 @@
 name: ServerGate
 main: servergate.ServerGate
-version: 0.0.1
+version: 1.0.0
 commands:
     open:
         description: Opens the server for players to join.
